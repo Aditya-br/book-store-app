@@ -16,8 +16,10 @@ const Home = () => {
   const [alreadyorderedid, setalreadyorderedid] = useState("");
   const dispatch = useDispatch();
 
+  const API_BASE_URL = "https://book-store-app-production-510c.up.railway.app";
+
   useEffect(() => {
-    fetch("http://localhost:3000/getbooks", {
+    fetch(`${API_BASE_URL}/getbooks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userid }),
@@ -32,7 +34,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/getusername", {
+    fetch(`${API_BASE_URL}/getusername`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userid }),

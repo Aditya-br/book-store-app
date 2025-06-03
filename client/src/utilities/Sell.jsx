@@ -11,15 +11,17 @@ const Sell = () => {
     formState: { errors },
   } = useForm();
   const user = useSelector(state => state.loginname.value);
-  const navigate=useNavigate()
-  const onSubmit = async (data) =>{
+  const navigate = useNavigate()
+  const API_BASE_URL = "https://book-store-app-production-510c.up.railway.app";
+
+  const onSubmit = async (data) => {
     const bookdata = {
       ...data,
-      Owner:user
+      Owner: user
     }
     console.log(bookdata)
     if (Object.keys(errors).length === 0) {
-      const response = await fetch("http://localhost:3000/sell", {
+      const response = await fetch(`${API_BASE_URL}/sell`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookdata),
@@ -37,7 +39,7 @@ const Sell = () => {
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/30 to-purple-200/20 rounded-full blur-3xl -translate-x-48 -translate-y-48"></div>
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tl from-indigo-200/20 to-blue-200/30 rounded-full blur-3xl translate-x-40 translate-y-40"></div>
       <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-purple-100/20 to-pink-100/20 rounded-full blur-2xl -translate-x-32 -translate-y-32"></div>
-      
+
       <div className="bg-white/90 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-3xl p-10 w-full max-w-lg relative z-10 transform transition-all duration-300 hover:shadow-blue-500/10">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -48,7 +50,7 @@ const Sell = () => {
           <h2 className="text-4xl font-black bg-gradient-to-r from-gray-800 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Sell Your Book</h2>
           <p className="text-gray-600 font-medium">Share your knowledge with the world</p>
         </div>
-        
+
         <div className="flex flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="relative group">
             <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

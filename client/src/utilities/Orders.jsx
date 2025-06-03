@@ -14,11 +14,12 @@ const Orders = () => {
         dispatch(remove(book._id))
         console.log(order)
     }
+const API_BASE_URL = "https://book-store-app-production-510c.up.railway.app";
 
     const handlePurchase = async () => {
         setIsLoading(true);
         const o = [user, ...order]
-        const response = await fetch("http://localhost:3000/buy", {
+        const response = await fetch(`${API_BASE_URL}/buy`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(o),
