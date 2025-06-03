@@ -8,15 +8,20 @@ import bodyParser from "body-parser"
 
 const app = express()
 const port = process.env.PORT || 3000
+
+// MIDDLEWARE - Must be BEFORE routes
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json())
 
+// Database connection
 const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/logindetails"
 mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err))
-app.use(cors())
-app.use(bodyParser.json())
+
+// ROUTES - Come AFTER middleware
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Bookstore API is running!',
@@ -32,36 +37,55 @@ app.get('/', (req, res) => {
     }
   })
 })
+
 app.post('/', async (req, res) => {
-    const { firstName, lastName, password } = req.body
-    const l = await LoginDetails.findOne({ firstName, lastName, password })
-    if (l) {
-        res.status(409).json({ success: false, message: "Already available" })
-    } else {
-        const logindetails = new LoginDetails({ firstName, lastName, password, profit: 0 })
-        await logindetails.save()
-        res.status(201).json({ success: true, message: "User created successfully", id: logindetails._id })
+    try {
+        console.log('Received req.body:', req.body); // Debug line
+        const { firstName, lastName, password } = req.body
+        const l = await LoginDetails.findOne({ firstName, lastName, password })
+        if (l) {
+            res.status(409).json({ success: false, message: "Already available" })
+        } else {
+            const logindetails = new LoginDetails({ firstName, lastName, password, profit: 0 })
+            await logindetails.save()
+            res.status(201).json({ success: true, message: "User created successfully", id: logindetails._id })
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 })
 
 app.post('/login', async (req, res) => {
-    const { firstName, lastName, password } = req.body
-    const l = await LoginDetails.findOne({ firstName, lastName, password })
-    if (l) {
-        res.status(200).json({ success: true, message: "User Found", id: l._id })
-    } else {
-        res.status(404).json({ success: false, message: "Not found" })
+    try {
+        const { firstName, lastName, password } = req.body
+        const l = await LoginDetails.findOne({ firstName, lastName, password })
+        if (l) {
+            res.status(200).json({ success: true, message: "User Found", id: l._id })
+        } else {
+            res.status(404).json({ success: false, message: "Not found" })
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 })
+
 app.post('/getusername', async (req, res) => {
-    const { userid } = req.body
-    const l = await LoginDetails.findOne({ _id: userid })
-    if (l) {
-        res.status(200).json({ success: true, message: "User Found", name: l.firstName })
-    } else {
-        res.status(404).json({ success: false, message: "Not found" })
+    try {
+        const { userid } = req.body
+        const l = await LoginDetails.findOne({ _id: userid })
+        if (l) {
+            res.status(200).json({ success: true, message: "User Found", name: l.firstName })
+        } else {
+            res.status(404).json({ success: false, message: "Not found" })
+        }
+    } catch (error) {
+        console.error('Get username error:', error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 })
+
 app.post('/getsaledetails', async (req, res) => {
     try {
         const { userid } = req.body;
@@ -170,11 +194,15 @@ app.post('/sell', async (req, res) => {
 });
 
 app.post('/getbooks', async (req, res) => {
-    const { userid } = req.body;
-    const allBooks = await BookDetails.find({ Owner: { $ne: userid } }).select('Name Price cover Author');
-    res.status(201).json({ success: true, message: "Success!", books: allBooks });
+    try {
+        const { userid } = req.body;
+        const allBooks = await BookDetails.find({ Owner: { $ne: userid } }).select('Name Price cover Author');
+        res.status(201).json({ success: true, message: "Success!", books: allBooks });
+    } catch (error) {
+        console.error("Error in /getbooks route:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
 });
-
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
