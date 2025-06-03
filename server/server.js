@@ -8,6 +8,8 @@ import bodyParser from "body-parser"
 
 const app = express()
 const port = process.env.PORT || 3000
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/logindetails"
 mongoose.connect(mongoURI)
