@@ -7,10 +7,12 @@ import cors from "cors"
 import bodyParser from "body-parser"
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
-mongoose.connect("mongodb://localhost:27017/logindetails")
-
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/logindetails"
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err))
 app.use(cors())
 app.use(bodyParser.json())
 
