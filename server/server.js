@@ -15,7 +15,21 @@ mongoose.connect(mongoURI)
   .catch(err => console.error('MongoDB connection error:', err))
 app.use(cors())
 app.use(bodyParser.json())
-
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Bookstore API is running!',
+    status: 'Connected to MongoDB Atlas',
+    endpoints: {
+      register: 'POST /',
+      login: 'POST /login',
+      getUsername: 'POST /getusername',
+      getSaleDetails: 'POST /getsaledetails',
+      buy: 'POST /buy',
+      sell: 'POST /sell',
+      getBooks: 'POST /getbooks'
+    }
+  })
+})
 app.post('/', async (req, res) => {
     const { firstName, lastName, password } = req.body
     const l = await LoginDetails.findOne({ firstName, lastName, password })
